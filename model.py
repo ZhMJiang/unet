@@ -49,7 +49,8 @@ def unet(pretrained_weights = None,input_size = (256,256,1)):
     conv8 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv8)
 
     up9 = Conv2D(64, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv8))
-    merge9 = merge([conv1,up9], mode = 'concat', concat_axis = 3)
+    # merge9 = merge([conv1,up9], mode = 'concat', concat_axis = 3)
+    merge9 = concatenate([conv1,up9], axis = 3)
     conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge9)
     conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
     conv9 = Conv2D(2, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
