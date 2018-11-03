@@ -1,0 +1,11 @@
+# Ignore ANY data BUT original membrane
+data/single_cell_rgb/**
+data/single_cell_rgb_0/**
+!data/membrane/**/*
+
+# Ignore predicted result
+data/**/*predict*
+
+# Ignore pretrained weight
+*.hdf5
+#!unet_membrane.hdf5
