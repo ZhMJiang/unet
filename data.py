@@ -80,16 +80,78 @@ def trainGenerator(batch_size,train_path,image_folder,mask_folder,aug_dict,image
         img,mask = adjustData(img,mask,flag_multi_class,num_class)
         yield (img,mask)
 
+# def testGenerator(test_path,num_image = 30,target_size = (256,256),flag_multi_class = False,as_gray = True):
+    # for i in range(num_image):
+        # img = io.imread(os.path.join(test_path,"%d.png"%i),as_gray = as_gray)
+        # img = img / 255
+        # img = trans.resize(img,target_size)
+        # img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
+        # img = np.reshape(img,(1,)+img.shape)
+        # yield img
 
+# def testGenerator(test_path,num_image = 30,target_size = (256,256),flag_multi_class = False,as_gray = True):
+    # for i in range(num_image):
+        # img = io.imread(os.path.join(test_path,"image","%d.jpg"%i),as_gray = as_gray)
+        # img = img / 255
+        # # 可变输入大小，不再调整图片大小
+        # # img = trans.resize(img,target_size)
+        # # 在此时，若 as_gray = False，则img为MxNx3; 否则为 MxN
+        # # img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
+        # img = np.reshape(img,img.shape+(1,)) if (as_gray) else img
+        # img = np.reshape(img,(1,)+img.shape)
+        # yield img
 
-def testGenerator(test_path,num_image = 30,target_size = (256,256),flag_multi_class = False,as_gray = True):
-    for i in range(num_image):
-        img = io.imread(os.path.join(test_path,"%d.png"%i),as_gray = as_gray)
-        img = img / 255
-        img = trans.resize(img,target_size)
-        img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
-        img = np.reshape(img,(1,)+img.shape)
-        yield img
+# def testGenerator(test_path, image_folder, target_size = (256,256), flag_multi_class = False, as_gray = True):
+    # name_list = glob.glob(os.path.join(test_path,image_folder,'*.jpg'))
+    # print('len(name_list)',len(name_list))
+    # for i in range(len(name_list)) :
+        # img = io.imread(name_list[i],as_gray = as_gray)
+        # if (np.max(img) > 1) :
+            # img = img / 255
+        # # 可变输入大小，不再调整图片大小
+        # # img = trans.resize(img,target_size)
+        # # 在此时，若 as_gray = False，则img为MxNx3; 否则为 MxN
+        # # img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
+        # img = np.reshape(img,img.shape+(1,)) if (as_gray) else img
+        # img = np.reshape(img,(1,)+img.shape)
+        # yield img
+
+def getTestGeneratorAndNameList(test_path, image_folder, file_filter = '*.png', target_size = None, flag_multi_class = False, as_gray = True):
+    name_list = glob.glob(os.path.join(test_path,image_folder,file_filter))
+    print('len(name_list)',len(name_list))
+    def testGenerator():            # 赞美闭包
+        for i in range(len(name_list)) :
+            img = io.imread(name_list[i],as_gray = as_gray)
+            if (np.max(img) > 1) :
+                img = img / 255
+            # 默认为可变输入大小
+            if target_size : 
+                img = trans.resize(img,target_size)
+            # 在此时，若 as_gray = False，则img为MxNx3; 否则为 MxN
+            # img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
+            img = np.reshape(img,img.shape+(1,)) if (as_gray) else img
+            img = np.reshape(img,(1,)+img.shape)
+            yield img
+    return [name_list,testGenerator()]
+
+# def testGenerator(test_path, image_folder,aug_dict,image_color_mode = "grayscale",
+                    # image_save_prefix  = "image", save_to_dir = None, target_size = (256,256), seed = 1,
+                    # flag_multi_class = False,num_class = 2):
+    # image_datagen = ImageDataGenerator(**aug_dict)
+    # image_generator = image_datagen.flow_from_directory(
+        # test_path,
+        # classes = [image_folder],
+        # class_mode = None,
+        # color_mode = image_color_mode,
+        # target_size = target_size,
+        # batch_size = 1,
+        # save_to_dir = save_to_dir,
+        # save_prefix  = image_save_prefix,
+        # seed = seed)
+    # for img in image_generator:
+        # if (np.max(img) > 1) :
+            # img = img / 255
+        # yield img
 
 
 def geneTrainNpy(image_path,mask_path,flag_multi_class = False,num_class = 2,image_prefix = "image",mask_prefix = "mask",image_as_gray = True,mask_as_gray = True):
@@ -117,8 +179,28 @@ def labelVisualize(num_class,color_dict,img):
     return img_out / 255
 
 
+# # saveResult
+  # # input:
+      # # save_path,npyfile,flag_multi_class = False,num_class = 2
+  # # 默认二值情况下输出
+# def saveResult(save_path,npyfile,flag_multi_class = False,num_class = 2):
+    # for i,item in enumerate(npyfile):
+        # img = labelVisualize(num_class,COLOR_DICT,item) if flag_multi_class else item[:,:,0]
+        # io.imsave(os.path.join(save_path,"%d_predict.png"%i),img)
 
-def saveResult(save_path,npyfile,flag_multi_class = False,num_class = 2):
+# saveResult
+#   input:
+#       save_path,npyfile,name_list,flag_multi_class = False,num_class = 2
+#   默认二值情况下输出,修改以支持任意名称
+#   增加了输入 name_list 输入文件地址列表
+def saveResult(save_path,npyfile,name_list,flag_multi_class = False,num_class = 2):
+    # 从文件地址列表得到去掉后缀名的文件名列表
+    file_name_list = list(map(lambda x : '.'.join(x.split('.')[:-1]),       # 去后缀
+            list(map(lambda x : x[1],                           # 取文件名
+                list(map(os.path.split,name_list))              # [(path,file_name)]
+            ))
+        ));
     for i,item in enumerate(npyfile):
         img = labelVisualize(num_class,COLOR_DICT,item) if flag_multi_class else item[:,:,0]
-        io.imsave(os.path.join(save_path,"%d_predict.png"%i),img)
+        # io.imsave(os.path.join(save_path,"%d_predict.png"%i),img)
+        io.imsave(os.path.join(save_path,file_name_list[i]+"_predict.png"),img)
