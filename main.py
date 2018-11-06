@@ -6,8 +6,8 @@ from data import *
 
 __UsePretrainedWeights  = False
 # __PretrainedWeights     = 'unet_membrane_rgb.hdf5'
-# __PretrainedWeights     = 'unet_fullpad_membrane_rgb_mse.hdf5'
-__PretrainedWeights     = 'unet_fullpad_membrane_rgb_mse_0.hdf5'
+__PretrainedWeights     = 'unet_fullpad_membrane_rgb_mse.hdf5'
+# __PretrainedWeights     = 'unet_fullpad_membrane_rgb_mse_0.hdf5'
 # __PretrainedWeights     = 'unet_membrane.hdf5'
 # __PretrainedWeights     = 'unet_fullpad_membrane.hdf5'
 __TrainNetwork          = True

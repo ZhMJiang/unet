@@ -1,3 +1,5 @@
+# Ignore pycache
+__pycache__/*
 # Ignore ANY data BUT original membrane
 data/single_cell_rgb/**
 data/single_cell_rgb_0/**
