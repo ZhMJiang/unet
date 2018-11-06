@@ -69,15 +69,20 @@ class ComplexPadding2D(Layer):
         if self.debug :
             print('# ComplexPadding2D # call')
         [[lenTopPad,lenBottomPad],[lenLeftPad,lenRightPad]] = self.padding
-        input_shape = K.int_shape(input)
+        # input_shape = K.int_shape(input)
+        input_shape = K.shape(input)
         if self.debug :
             print('# ComplexPadding2D # input :',input)
             print('# ComplexPadding2D # input_shape :',input_shape)
             print('# ComplexPadding2D # mode :',self.mode,', data_format :',self.data_format)
         if self.data_format == 'channels_first':
-            [cntBatch, cntChannel, cntRow, cntColumn] = input_shape
             if self.mode == 'CONSTANT' :
                 # 补零
+                # [cntBatch, cntChannel, cntRow, cntColumn] = input_shape
+                cntBatch    = input_shape[0]
+                cntChannel  = input_shape[1]
+                cntRow      = input_shape[2]
+                cntColumn   = input_shape[3]
                 topPad = K.zeros((cntBatch,cntChannel,lenTopPad,cntColumn))
                 bottomPad = K.zeros((cntBatch,cntChannel,lenBottomPad,cntColumn))
                 paddedRow = K.concatenate([topPad,input,bottomPad],2)
@@ -102,9 +107,13 @@ class ComplexPadding2D(Layer):
                 rightPad = K.reverse(paddedRow[:,:,:,-lenRightPad:],3)      # 后lenRightPad列
                 paddedAll = K.concatenate([leftPad,paddedRow,rightPad],3)
         elif self.data_format == 'channels_last':
-            [cntBatch, cntRow, cntColumn, cntChannel] = input_shape
             if self.mode == 'CONSTANT' :
                 # 补零
+                # [cntBatch, cntRow, cntColumn, cntChannel] = input_shape
+                cntBatch    = input_shape[0]
+                cntRow      = input_shape[1]
+                cntColumn   = input_shape[2]
+                cntChannel  = input_shape[3]
                 topPad = K.zeros((cntBatch,lenTopPad,cntColumn,cntChannel))
                 bottomPad = K.zeros((cntBatch,lenBottomPad,cntColumn,cntChannel))
                 paddedRow = K.concatenate([topPad,input,bottomPad],1)
