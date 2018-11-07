@@ -12,11 +12,7 @@ from keras import backend as keras
 from complexPadding import *
 
 
-<<<<<<< HEAD
 def unet(pretrained_weights = None,input_size = (256,256,1),use_mirror_padding = False,loss = 'binary_crossentropy',num_class = 2):
-=======
-def unet(pretrained_weights = None,input_size = (256,256,1),use_mirror_padding = False,loss = 'binary_crossentropy'):
->>>>>>> bd4945c03e0b4d9dce5272b78808bb7788446898
     
     # 输入层
     input_s = Input(input_size)
@@ -110,12 +106,8 @@ def unet(pretrained_weights = None,input_size = (256,256,1),use_mirror_padding =
     print('merge9 :',merge9)
     conv9 = Conv2D(64, 3, activation = 'relu', padding = upPadding, kernel_initializer = 'he_normal')(merge9)
     conv9 = Conv2D(64, 3, activation = 'relu', padding = upPadding, kernel_initializer = 'he_normal')(conv9)
-<<<<<<< HEAD
     # conv9 = Conv2D(2, 3, activation = 'relu', padding = upPadding, kernel_initializer = 'he_normal')(conv9)
     conv9 = Conv2D(num_class, 3, activation = 'relu', padding = upPadding, kernel_initializer = 'he_normal')(conv9)
-=======
-    conv9 = Conv2D(2, 3, activation = 'relu', padding = upPadding, kernel_initializer = 'he_normal')(conv9)
->>>>>>> bd4945c03e0b4d9dce5272b78808bb7788446898
     print('conv9 :',conv9)
     # conv10 = Conv2D(1, 1, activation = 'sigmoid')(conv9)
     # print('conv10 :',conv10)
